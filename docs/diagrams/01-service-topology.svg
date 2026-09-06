@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 664" width="1120" height="664" role="img" aria-label="Топология FlowForge: фронтенд и api-gateway обращаются синхронно к secrets, identity, workflow и execution-service; execution-service публикует команды в RabbitMQ через outbox; воркеры ai, http, notification и планировщик обмениваются сообщениями с брокером; воркеры синхронно резолвят креденшелы в secrets-service">
+<title>Топология сервисов FlowForge</title>
+<style>
+@media (prefers-color-scheme:dark){
+  .f-ink{fill:#e6e9ef} .s-ink{stroke:#e6e9ef}
+  .f-ground{fill:#0d1016} .s-ground{stroke:#0d1016}
+  .f-surface{fill:#151a22} .s-surface{stroke:#151a22}
+  .f-surface2{fill:#1d232d} .s-surface2{stroke:#1d232d}
+  .f-line{fill:#2b333f} .s-line{stroke:#2b333f}
+  .f-line-soft{fill:#222933} .s-line-soft{stroke:#222933}
+  .f-muted{fill:#96a1b4} .s-muted{stroke:#96a1b4}
+  .f-sync{fill:#7d9dff} .s-sync{stroke:#7d9dff}
+  .f-async{fill:#dcab42} .s-async{stroke:#dcab42}
+  .f-ok{fill:#4fbb80} .s-ok{stroke:#4fbb80}
+  .f-bad{fill:#e46e62} .s-bad{stroke:#e46e62}
+  .f-sync-wash{fill:#161d2e} .s-sync-wash{stroke:#161d2e}
+  .f-async-wash{fill:#221d12} .s-async-wash{stroke:#221d12}
+}
+</style>
+<rect width="1120" height="664" fill="#ffffff" class="f-surface"/>
+
+<defs>
+  <marker id="a1s" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="0,0 10,4 0,8" fill="#2a55c9" class="f-sync"/></marker>
+  <marker id="a1sr" viewBox="0 0 10 8" refX="1" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="10,0 0,4 10,8" fill="#2a55c9" class="f-sync"/></marker>
+  <marker id="a1a" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="0,0 10,4 0,8" fill="#8a6510" class="f-async"/></marker>
+  <marker id="a1ar" viewBox="0 0 10 8" refX="1" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="10,0 0,4 10,8" fill="#8a6510" class="f-async"/></marker>
+</defs>
+<g font-family="IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, DejaVu Sans Mono, monospace">
+
+  <!-- zone labels -->
+  <text x="20" y="24" font-size="10.5" font-weight="600" letter-spacing="1.4" fill="#2a55c9" class="f-sync">CONTROL PLANE</text>
+  <text x="20" y="422" font-size="10.5" font-weight="600" letter-spacing="1.4" fill="#8a6510" class="f-async">DATA PLANE</text>
+
+  <!-- frontend -->
+  <rect x="430" y="34" width="260" height="46" rx="5" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/>
+  <text x="560" y="55" font-size="12.5" font-weight="600" text-anchor="middle" fill="#131720" class="f-ink">frontend</text>
+  <text x="560" y="70" font-size="10" text-anchor="middle" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">React 19 + React Flow · Vite</text>
+
+  <!-- frontend <-> gateway -->
+  <line x1="560" y1="80" x2="560" y2="110" stroke="#2a55c9" stroke-width="1.6"
+        marker-end="url(#a1s)" marker-start="url(#a1sr)" class="s-sync"/>
+  <text x="570" y="100" font-size="10" fill="#2a55c9" class="f-sync">HTTPS + WS</text>
+
+  <!-- gateway -->
+  <rect x="80" y="110" width="960" height="54" rx="5" fill="#eef2fd" stroke="#2a55c9" stroke-width="1.4" class="f-sync-wash s-sync"/>
+  <text x="98" y="133" font-size="13" font-weight="600" fill="#131720" class="f-ink">api-gateway</text>
+  <text x="98" y="150" font-size="10.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">верификация JWT · роутинг · WebSocket-хаб · rate limit по workspace</text>
+  <text x="1022" y="139" font-size="10" text-anchor="end" fill="#2a55c9" class="f-sync">stateless · N реплик</text>
+
+  <!-- gateway fanout -->
+  <line x1="180" y1="164" x2="180" y2="200" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="186" y="186" font-size="9.5" fill="#5b6474" class="f-muted">credentials CRUD</text>
+  <line x1="410" y1="164" x2="410" y2="200" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="416" y="186" font-size="9.5" fill="#5b6474" class="f-muted">login · RBAC</text>
+  <line x1="640" y1="164" x2="640" y2="200" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="646" y="186" font-size="9.5" fill="#5b6474" class="f-muted">workflow CRUD</text>
+  <line x1="915" y1="164" x2="915" y2="200" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="921" y="186" font-size="9.5" fill="#5b6474" class="f-muted">execute</text>
+  <line x1="1010" y1="200" x2="1010" y2="164" stroke="#8a6510" stroke-width="1.4"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" class="s-async"/>
+  <text x="1016" y="186" font-size="9.5" fill="#8a6510" class="f-async">статусы</text>
+
+  <!-- control row: secrets -->
+  <rect x="80" y="200" width="200" height="88" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="94" y="222" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">secrets-service</text>
+  <text x="94" y="239" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">AES-GCM, DEK на workspace,</text>
+  <text x="94" y="252" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">audit каждого резолва</text>
+  <rect x="94" y="260" width="98" height="18" rx="3" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="100" y="273" font-size="9.5" fill="#5b6474" class="f-muted">secrets_db</text>
+
+  <!-- identity -->
+  <rect x="310" y="200" width="200" height="88" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="324" y="222" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">identity-service</text>
+  <text x="324" y="239" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">users · workspaces · RBAC</text>
+  <text x="324" y="252" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">политики квот</text>
+  <rect x="324" y="260" width="98" height="18" rx="3" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="330" y="273" font-size="9.5" fill="#5b6474" class="f-muted">identity_db</text>
+
+  <!-- workflow -->
+  <rect x="540" y="200" width="200" height="88" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="554" y="222" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">workflow-service</text>
+  <text x="554" y="239" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">граф · версии · валидация</text>
+  <text x="554" y="252" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">DAG · publish</text>
+  <rect x="554" y="260" width="98" height="18" rx="3" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="560" y="273" font-size="9.5" fill="#5b6474" class="f-muted">workflow_db</text>
+
+  <!-- workflow -> execution event -->
+  <line x1="740" y1="232" x2="790" y2="232" stroke="#8a6510" stroke-width="1.5"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" class="s-async"/>
+  <text x="765" y="222" font-size="9" text-anchor="middle" fill="#8a6510" class="f-async">workflow.published</text>
+
+  <!-- execution (emphasised) -->
+  <rect x="790" y="200" width="250" height="88" rx="5" fill="#ffffff" stroke="#131720" stroke-width="2" class="f-surface s-ink"/>
+  <text x="806" y="222" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">execution-service</text>
+  <text x="806" y="239" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">движок · машина состояний ·</text>
+  <text x="806" y="252" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">снапшот версии · учёт стоимости</text>
+  <rect x="806" y="260" width="104" height="18" rx="3" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="812" y="273" font-size="9.5" fill="#5b6474" class="f-muted">execution_db</text>
+
+  <!-- secrets <- workers (routed left channel) -->
+  <path d="M 80 452 L 52 452 L 52 244 L 74 244" fill="none" stroke="#2a55c9"
+        stroke-width="1.5" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="62" y="322" font-size="9.5" fill="#2a55c9" class="f-sync">resolve(credential_ref)</text>
+
+  <!-- execution <-> broker -->
+  <line x1="880" y1="288" x2="880" y2="344" stroke="#8a6510" stroke-width="1.6"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" class="s-async"/>
+  <text x="872" y="322" font-size="9.5" text-anchor="end" fill="#8a6510" class="f-async">outbox → node.execute</text>
+  <line x1="950" y1="344" x2="950" y2="288" stroke="#8a6510" stroke-width="1.6"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" class="s-async"/>
+  <text x="958" y="322" font-size="9.5" fill="#8a6510" class="f-async">node.completed</text>
+
+  <!-- broker -->
+  <rect x="140" y="344" width="830" height="48" rx="5" fill="#faf3e4" stroke="#8a6510" stroke-width="1.4" class="f-async-wash s-async"/>
+  <text x="158" y="365" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">RabbitMQ 4</text>
+  <text x="158" y="381" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">consistent-hash по execution_id · delayed exchange · quorum queues · DLQ</text>
+
+  <!-- broker -> workers -->
+  <line x1="190" y1="392" x2="190" y2="440" stroke="#8a6510" stroke-width="1.5"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" marker-start="url(#a1ar)" class="s-async"/>
+  <text x="198" y="420" font-size="9.5" fill="#8a6510" class="f-async">tasks.ai</text>
+  <line x1="435" y1="392" x2="435" y2="440" stroke="#8a6510" stroke-width="1.5"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" marker-start="url(#a1ar)" class="s-async"/>
+  <text x="443" y="420" font-size="9.5" fill="#8a6510" class="f-async">tasks.http</text>
+  <line x1="680" y1="392" x2="680" y2="440" stroke="#8a6510" stroke-width="1.5"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" marker-start="url(#a1ar)" class="s-async"/>
+  <text x="688" y="420" font-size="9.5" fill="#8a6510" class="f-async">tasks.notify</text>
+  <line x1="925" y1="440" x2="925" y2="392" stroke="#8a6510" stroke-width="1.5"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" class="s-async"/>
+  <text x="933" y="420" font-size="9.5" fill="#8a6510" class="f-async">execution.start</text>
+
+  <!-- workers -->
+  <rect x="80" y="440" width="215" height="88" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="94" y="462" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">ai-worker</text>
+  <text x="94" y="479" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">латентность 1–60 с</text>
+  <text x="94" y="492" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">provider rate limit + fallback</text>
+  <text x="94" y="514" font-size="9.5" fill="#8a6510" class="f-async">stateless</text>
+
+  <rect x="325" y="440" width="215" height="88" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="339" y="462" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">http-worker</text>
+  <text x="339" y="479" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">латентность 50–500 мс</text>
+  <text x="339" y="492" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">circuit breaker per-host</text>
+  <text x="339" y="514" font-size="9.5" fill="#8a6510" class="f-async">stateless</text>
+
+  <rect x="570" y="440" width="215" height="88" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="584" y="462" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">notification-worker</text>
+  <text x="584" y="479" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">email · Slack · Telegram</text>
+  <text x="584" y="492" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">шаблоны, дедуп по ключу</text>
+  <text x="584" y="514" font-size="9.5" fill="#8a6510" class="f-async">stateless</text>
+
+  <rect x="815" y="440" width="225" height="88" rx="5" fill="#ffffff" stroke="#d5dae2" stroke-dasharray="5 3" class="f-surface s-line"/>
+  <text x="829" y="462" font-size="12.5" font-weight="600" fill="#131720" class="f-ink">scheduler + reaper</text>
+  <text x="829" y="479" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">cron · Delay-таймеры ·</text>
+  <text x="829" y="492" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">перевыдача истёкших lease</text>
+  <rect x="829" y="500" width="188" height="18" rx="3" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="835" y="513" font-size="9.5" fill="#5b6474" class="f-muted">execution_db · тот же код</text>
+
+  <!-- workers -> external -->
+  <line x1="187" y1="528" x2="187" y2="572" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="195" y="553" font-size="9.5" fill="#5b6474" class="f-muted">chat completions</text>
+  <line x1="432" y1="528" x2="432" y2="572" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="440" y="553" font-size="9.5" fill="#5b6474" class="f-muted">REST + retry</text>
+  <line x1="677" y1="528" x2="677" y2="572" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="685" y="553" font-size="9.5" fill="#5b6474" class="f-muted">SMTP / API</text>
+
+  <rect x="80" y="572" width="215" height="42" rx="5" fill="#eceff4" stroke="#d5dae2" stroke-dasharray="3 3" class="f-surface2 s-line"/>
+  <text x="187" y="598" font-size="11" text-anchor="middle" fill="#5b6474" class="f-muted">Anthropic · OpenAI</text>
+  <rect x="325" y="572" width="215" height="42" rx="5" fill="#eceff4" stroke="#d5dae2" stroke-dasharray="3 3" class="f-surface2 s-line"/>
+  <text x="432" y="598" font-size="11" text-anchor="middle" fill="#5b6474" class="f-muted">External APIs · CRM</text>
+  <rect x="570" y="572" width="215" height="42" rx="5" fill="#eceff4" stroke="#d5dae2" stroke-dasharray="3 3" class="f-surface2 s-line"/>
+  <text x="677" y="598" font-size="11" text-anchor="middle" fill="#5b6474" class="f-muted">SMTP · Slack · Telegram</text>
+
+  <!-- legend -->
+  <line x1="820" y1="588" x2="858" y2="588" stroke="#2a55c9" stroke-width="1.6" marker-end="url(#a1s)" class="s-sync"/>
+  <text x="866" y="592" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">синхронный вызов</text>
+  <line x1="820" y1="608" x2="858" y2="608" stroke="#8a6510" stroke-width="1.6"
+        stroke-dasharray="4 3" marker-end="url(#a1a)" class="s-async"/>
+  <text x="866" y="612" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">сообщение через брокер</text>
+</g>
+</svg>

@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 724" width="960" height="724" role="img" aria-label="Путь результата ноды: воркер публикует node.completed, RabbitMQ маршрутизирует по consistent-hash от execution_id, execution-service в одной транзакции фиксирует идемпотентность, обновляет шаг, вычисляет следующие ноды и пишет outbox, затем подтверждает сообщение">
+<title>Путь одного результата ноды</title>
+<style>
+@media (prefers-color-scheme:dark){
+  .f-ink{fill:#e6e9ef} .s-ink{stroke:#e6e9ef}
+  .f-ground{fill:#0d1016} .s-ground{stroke:#0d1016}
+  .f-surface{fill:#151a22} .s-surface{stroke:#151a22}
+  .f-surface2{fill:#1d232d} .s-surface2{stroke:#1d232d}
+  .f-line{fill:#2b333f} .s-line{stroke:#2b333f}
+  .f-line-soft{fill:#222933} .s-line-soft{stroke:#222933}
+  .f-muted{fill:#96a1b4} .s-muted{stroke:#96a1b4}
+  .f-sync{fill:#7d9dff} .s-sync{stroke:#7d9dff}
+  .f-async{fill:#dcab42} .s-async{stroke:#dcab42}
+  .f-ok{fill:#4fbb80} .s-ok{stroke:#4fbb80}
+  .f-bad{fill:#e46e62} .s-bad{stroke:#e46e62}
+  .f-sync-wash{fill:#161d2e} .s-sync-wash{stroke:#161d2e}
+  .f-async-wash{fill:#221d12} .s-async-wash{stroke:#221d12}
+}
+</style>
+<rect width="960" height="724" fill="#ffffff" class="f-surface"/>
+
+<defs>
+  <marker id="a3m" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="0,0 10,4 0,8" fill="#8a6510" class="f-async"/></marker>
+  <marker id="a3n" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="0,0 10,4 0,8" fill="#5b6474" class="f-muted"/></marker>
+</defs>
+<g font-family="IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, DejaVu Sans Mono, monospace">
+
+  <!-- step badges -->
+  <g font-size="11" font-weight="600" text-anchor="middle">
+    <circle cx="124" cy="52" r="13" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/><text x="124" y="56" fill="#131720" class="f-ink">1</text>
+    <circle cx="124" cy="136" r="13" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/><text x="124" y="140" fill="#131720" class="f-ink">2</text>
+    <circle cx="124" cy="222" r="13" fill="#131720" stroke="#131720" class="f-ink s-ink"/><text x="124" y="226" fill="#f6f7f9" class="f-ground">3</text>
+    <circle cx="124" cy="502" r="13" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/><text x="124" y="506" fill="#131720" class="f-ink">4</text>
+    <circle cx="124" cy="582" r="13" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/><text x="124" y="586" fill="#131720" class="f-ink">5</text>
+    <circle cx="124" cy="662" r="13" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/><text x="124" y="666" fill="#131720" class="f-ink">6</text>
+  </g>
+
+  <!-- 1 -->
+  <rect x="150" y="26" width="470" height="52" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="166" y="47" font-size="12" font-weight="600" fill="#131720" class="f-ink">ai-worker</text>
+  <text x="166" y="65" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">output &gt; 64 КБ → MinIO; публикует node.completed{event_id, output_ref}</text>
+  <line x1="385" y1="78" x2="385" y2="110" stroke="#8a6510" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a3m)" class="s-async"/>
+
+  <!-- 2 -->
+  <rect x="150" y="110" width="470" height="52" rx="5" fill="#faf3e4" stroke="#8a6510" stroke-width="1.3" class="f-async-wash s-async"/>
+  <text x="166" y="131" font-size="12" font-weight="600" fill="#131720" class="f-ink">RabbitMQ · consistent-hash(execution_id)</text>
+  <text x="166" y="149" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">→ results.N, prefetch=1 — один execution обрабатывается строго последовательно</text>
+  <line x1="385" y1="162" x2="385" y2="194" stroke="#8a6510" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a3m)" class="s-async"/>
+
+  <!-- 3: transaction -->
+  <rect x="150" y="194" width="470" height="248" rx="6" fill="#ffffff" stroke="#131720" stroke-width="2" class="f-surface s-ink"/>
+  <text x="166" y="216" font-size="11.5" font-weight="600" fill="#131720" class="f-ink">execution-service — ОДНА транзакция</text>
+  <rect x="170" y="228" width="430" height="40" rx="4" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="184" y="253" font-size="11" fill="#131720" class="f-ink">INSERT processed_event(event_id)</text>
+  <rect x="170" y="276" width="430" height="40" rx="4" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="184" y="301" font-size="11" fill="#131720" class="f-ink">UPDATE step_execution → SUCCESS, output_ref</text>
+  <rect x="170" y="324" width="430" height="40" rx="4" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="184" y="349" font-size="11" fill="#131720" class="f-ink">advance(): Condition считается ЗДЕСЬ, in-process</text>
+  <rect x="170" y="372" width="430" height="40" rx="4" fill="#eceff4" stroke="#e4e8ee" class="f-surface2 s-line-soft"/>
+  <text x="184" y="391" font-size="11" fill="#131720" class="f-ink">INSERT step_execution(lease_expires_at)</text>
+  <text x="184" y="405" font-size="11" fill="#131720" class="f-ink">INSERT outbox_event(node.execute)</text>
+  <text x="600" y="432" font-size="11.5" font-weight="600" text-anchor="end" fill="#14713f" class="f-ok">COMMIT</text>
+  <line x1="385" y1="442" x2="385" y2="478" stroke="#5b6474" stroke-width="1.5" marker-end="url(#a3n)" class="s-muted"/>
+
+  <!-- 4 -->
+  <rect x="150" y="478" width="470" height="48" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="166" y="498" font-size="12" font-weight="600" fill="#131720" class="f-ink">ACK в RabbitMQ</text>
+  <text x="166" y="515" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">только после COMMIT — никогда до</text>
+  <line x1="385" y1="526" x2="385" y2="558" stroke="#5b6474" stroke-width="1.5" marker-end="url(#a3n)" class="s-muted"/>
+
+  <!-- 5 -->
+  <rect x="150" y="558" width="470" height="48" rx="5" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="166" y="578" font-size="12" font-weight="600" fill="#131720" class="f-ink">outbox publisher</text>
+  <text x="166" y="595" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">отдельный воркер, publisher confirms, помечает отправленное</text>
+  <line x1="385" y1="606" x2="385" y2="638" stroke="#8a6510" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a3m)" class="s-async"/>
+
+  <!-- 6 -->
+  <rect x="150" y="638" width="470" height="48" rx="5" fill="#faf3e4" stroke="#8a6510" stroke-width="1.3" class="f-async-wash s-async"/>
+  <text x="166" y="658" font-size="12" font-weight="600" fill="#131720" class="f-ink">tasks.ai · tasks.http · tasks.notify</text>
+  <text x="166" y="675" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">в сообщении только идентификаторы и ссылки — payload не летает</text>
+
+  <!-- annotations -->
+  <line x1="600" y1="248" x2="654" y2="242" stroke="#5b6474" stroke-width="1" stroke-dasharray="3 3" class="s-muted"/>
+  <rect x="658" y="212" width="282" height="60" rx="5" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/>
+  <text x="672" y="232" font-size="10" font-weight="600" fill="#131720" class="f-ink">Дубль доставки гасится здесь</text>
+  <text x="672" y="248" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">UNIQUE violation → ROLLBACK → ACK.</text>
+  <text x="672" y="262" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">Состояние не изменилось ни на байт.</text>
+
+  <line x1="600" y1="392" x2="654" y2="378" stroke="#5b6474" stroke-width="1" stroke-dasharray="3 3" class="s-muted"/>
+  <rect x="658" y="340" width="282" height="74" rx="5" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/>
+  <text x="672" y="360" font-size="10" font-weight="600" fill="#131720" class="f-ink">scheduler · reaper</text>
+  <text x="672" y="376" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">lease_expires_at &lt; now() → перевыдача</text>
+  <text x="672" y="390" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">с тем же idempotency_key. Ловит то,</text>
+  <text x="672" y="404" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">что redelivery не ловит: зависший воркер.</text>
+
+  <line x1="600" y1="502" x2="654" y2="498" stroke="#5b6474" stroke-width="1" stroke-dasharray="3 3" class="s-muted"/>
+  <rect x="658" y="468" width="282" height="60" rx="5" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/>
+  <text x="672" y="488" font-size="10" font-weight="600" fill="#131720" class="f-ink">Падение между COMMIT и ACK</text>
+  <text x="672" y="504" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">RabbitMQ redelivery → шаг 3 повторно →</text>
+  <text x="672" y="518" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">отсекается на первой же строке.</text>
+
+  <rect x="658" y="558" width="282" height="60" rx="5" fill="#eceff4" stroke="#b23127" stroke-dasharray="4 3" class="f-surface2 s-bad"/>
+  <text x="672" y="578" font-size="10" font-weight="600" fill="#b23127" class="f-bad">Исчерпан retry</text>
+  <text x="672" y="594" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">step → FAILED, сообщение → DLQ с</text>
+  <text x="672" y="608" font-size="9.5" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">payload, ошибкой и числом попыток.</text>
+</g>
+</svg>

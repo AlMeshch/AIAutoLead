@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 664" width="1000" height="664" role="img" aria-label="Слои execution-service: presentation с HTTP-роутами и AMQP-консьюмерами вызывает application, application оркестрирует домен, а инфраструктурные адаптеры реализуют порты, объявленные в домене">
+<title>Слои и модули внутри execution-service</title>
+<style>
+@media (prefers-color-scheme:dark){
+  .f-ink{fill:#e6e9ef} .s-ink{stroke:#e6e9ef}
+  .f-ground{fill:#0d1016} .s-ground{stroke:#0d1016}
+  .f-surface{fill:#151a22} .s-surface{stroke:#151a22}
+  .f-surface2{fill:#1d232d} .s-surface2{stroke:#1d232d}
+  .f-line{fill:#2b333f} .s-line{stroke:#2b333f}
+  .f-line-soft{fill:#222933} .s-line-soft{stroke:#222933}
+  .f-muted{fill:#96a1b4} .s-muted{stroke:#96a1b4}
+  .f-sync{fill:#7d9dff} .s-sync{stroke:#7d9dff}
+  .f-async{fill:#dcab42} .s-async{stroke:#dcab42}
+  .f-ok{fill:#4fbb80} .s-ok{stroke:#4fbb80}
+  .f-bad{fill:#e46e62} .s-bad{stroke:#e46e62}
+  .f-sync-wash{fill:#161d2e} .s-sync-wash{stroke:#161d2e}
+  .f-async-wash{fill:#221d12} .s-async-wash{stroke:#221d12}
+}
+</style>
+<rect width="1000" height="664" fill="#ffffff" class="f-surface"/>
+
+<defs>
+  <marker id="a2d" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="0,0 10,4 0,8" fill="#5b6474" class="f-muted"/></marker>
+  <marker id="a2u" viewBox="0 0 10 8" refX="9" refY="4" markerWidth="8" markerHeight="7" orient="auto">
+    <polygon points="0,0 10,4 0,8" fill="#2a55c9" class="f-sync"/></marker>
+</defs>
+<g font-family="IBM Plex Mono, ui-monospace, SFMono-Regular, Menlo, DejaVu Sans Mono, monospace">
+
+  <!-- presentation -->
+  <rect x="40" y="36" width="920" height="104" rx="6" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/>
+  <text x="54" y="54" font-size="10" font-weight="600" letter-spacing="1.2" fill="#5b6474" class="f-muted">PRESENTATION</text>
+  <rect x="64" y="66" width="420" height="56" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="80" y="88" font-size="12" font-weight="600" fill="#131720" class="f-ink">api/routes/</text>
+  <text x="80" y="106" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">FastAPI · Pydantic-схемы запроса и ответа</text>
+  <rect x="516" y="66" width="420" height="56" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="532" y="88" font-size="12" font-weight="600" fill="#131720" class="f-ink">messaging/consumers/</text>
+  <text x="532" y="106" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">aio-pika · тот же вход, другой транспорт</text>
+
+  <line x1="274" y1="140" x2="274" y2="180" stroke="#5b6474" stroke-width="1.4" marker-end="url(#a2d)" class="s-muted"/>
+  <text x="282" y="164" font-size="9.5" fill="#5b6474" class="f-muted">POST /executions</text>
+  <line x1="726" y1="140" x2="726" y2="180" stroke="#5b6474" stroke-width="1.4" marker-end="url(#a2d)" class="s-muted"/>
+  <text x="734" y="164" font-size="9.5" fill="#5b6474" class="f-muted">node.completed</text>
+
+  <!-- application -->
+  <rect x="40" y="180" width="920" height="104" rx="6" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/>
+  <text x="54" y="198" font-size="10" font-weight="600" letter-spacing="1.2" fill="#5b6474" class="f-muted">APPLICATION</text>
+  <rect x="64" y="210" width="272" height="56" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="80" y="232" font-size="12" font-weight="600" fill="#131720" class="f-ink">commands/</text>
+  <text x="80" y="250" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">StartExecution, CancelExecution</text>
+  <rect x="364" y="210" width="272" height="56" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="380" y="232" font-size="12" font-weight="600" fill="#131720" class="f-ink">queries/</text>
+  <text x="380" y="250" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">читают проекцию, минуя агрегат</text>
+  <rect x="664" y="210" width="272" height="56" rx="4" fill="#ffffff" stroke="#131720" stroke-width="1.8" class="f-surface s-ink"/>
+  <text x="680" y="232" font-size="12" font-weight="600" fill="#131720" class="f-ink">engine/advance.py</text>
+  <text x="680" y="250" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">политика продвижения графа</text>
+
+  <line x1="200" y1="284" x2="200" y2="324" stroke="#5b6474" stroke-width="1.4" marker-end="url(#a2d)" class="s-muted"/>
+  <text x="208" y="308" font-size="9.5" fill="#5b6474" class="f-muted">загружает агрегат</text>
+  <line x1="800" y1="284" x2="800" y2="324" stroke="#5b6474" stroke-width="1.4" marker-end="url(#a2d)" class="s-muted"/>
+  <text x="808" y="308" font-size="9.5" fill="#5b6474" class="f-muted">execution.complete()</text>
+
+  <!-- domain -->
+  <rect x="40" y="324" width="920" height="170" rx="6" fill="#eef2fd" stroke="#2a55c9" stroke-width="1.4" class="f-sync-wash s-sync"/>
+  <text x="54" y="344" font-size="10" font-weight="600" letter-spacing="1.2" fill="#2a55c9" class="f-sync">DOMAIN — ноль импортов инфраструктуры</text>
+  <rect x="64" y="356" width="430" height="108" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="80" y="376" font-size="10" letter-spacing=".8" fill="#5b6474" class="f-muted">АГРЕГАТЫ И VALUE OBJECTS</text>
+  <text x="80" y="398" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">Execution</text>
+  <text x="182" y="398" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">— статус, счётчики, инварианты</text>
+  <text x="80" y="418" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">StepExecution</text>
+  <text x="182" y="418" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">— отдельный агрегат, свой lease</text>
+  <text x="80" y="438" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">RetryPolicy</text>
+  <text x="182" y="438" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">— backoff + jitter, чистая функция</text>
+  <text x="80" y="456" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">ExecutionStatus</text>
+  <text x="182" y="456" font-size="10" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">— разрешённые переходы</text>
+
+  <rect x="530" y="356" width="396" height="108" rx="4" fill="#ffffff" stroke="#2a55c9" stroke-dasharray="5 3" class="f-surface s-sync"/>
+  <text x="546" y="376" font-size="10" letter-spacing=".8" fill="#2a55c9" class="f-sync">ПОРТЫ — ABC, объявлены здесь</text>
+  <text x="546" y="398" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">ExecutionRepository</text>
+  <text x="546" y="418" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">OutboxPort</text>
+  <text x="546" y="438" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">LockPort</text>
+  <text x="546" y="456" font-size="11.5" font-weight="500" fill="#131720" class="f-ink">Clock</text>
+
+  <text x="500" y="484" font-size="10" text-anchor="middle" fill="#5b6474" class="f-muted">domain не импортирует fastapi · sqlalchemy · aio_pika · redis</text>
+
+  <!-- infra -> ports (upward, converging) -->
+  <line x1="166" y1="534" x2="580" y2="470" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a2u)" class="s-sync"/>
+  <line x1="391" y1="534" x2="660" y2="470" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a2u)" class="s-sync"/>
+  <line x1="616" y1="534" x2="740" y2="470" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a2u)" class="s-sync"/>
+  <line x1="841" y1="534" x2="820" y2="470" stroke="#2a55c9" stroke-width="1.4" marker-end="url(#a2u)" class="s-sync"/>
+  <text x="230" y="512" font-size="10" fill="#2a55c9" class="f-sync">реализует порты домена</text>
+
+  <!-- infrastructure -->
+  <rect x="40" y="534" width="920" height="104" rx="6" fill="#eceff4" stroke="#d5dae2" class="f-surface2 s-line"/>
+  <text x="54" y="552" font-size="10" font-weight="600" letter-spacing="1.2" fill="#5b6474" class="f-muted">INFRASTRUCTURE</text>
+  <rect x="64" y="564" width="205" height="52" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="166" y="586" font-size="11" font-weight="600" text-anchor="middle" fill="#131720" class="f-ink">SqlAlchemyRepo</text>
+  <text x="166" y="602" font-size="9.5" text-anchor="middle" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">asyncpg · optimistic lock</text>
+  <rect x="289" y="564" width="205" height="52" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="391" y="586" font-size="11" font-weight="600" text-anchor="middle" fill="#131720" class="f-ink">PostgresOutbox</text>
+  <text x="391" y="602" font-size="9.5" text-anchor="middle" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">та же транзакция</text>
+  <rect x="514" y="564" width="205" height="52" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="616" y="586" font-size="11" font-weight="600" text-anchor="middle" fill="#131720" class="f-ink">RedisLock</text>
+  <text x="616" y="602" font-size="9.5" text-anchor="middle" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">SET NX PX + fencing</text>
+  <rect x="739" y="564" width="187" height="52" rx="4" fill="#ffffff" stroke="#d5dae2" class="f-surface s-line"/>
+  <text x="832" y="586" font-size="11" font-weight="600" text-anchor="middle" fill="#131720" class="f-ink">SystemClock</text>
+  <text x="832" y="602" font-size="9.5" text-anchor="middle" fill="#5b6474" font-family="IBM Plex Sans, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" class="f-muted">подменяется в тестах</text>
+</g>
+</svg>
